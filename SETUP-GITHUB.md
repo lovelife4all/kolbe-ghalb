@@ -1,6 +1,13 @@
 # 🚀 چک‌لیستِ راه‌اندازی روی گیت‌هاب
 
-همه‌چیز آماده است؛ فقط این ۵ قدم باقی مانده. حدود **۱۰ دقیقه**.
+## 🎉 وضعیت فعلی
+
+- ✅ ریپو ساخته شد: **https://github.com/lovelife4all/kolbe-ghalb** (عمومی)
+- ✅ کدها push شدند: ۸۹ فایل، workflow فعال
+- ✅ لینک عمومی تصاویر تست شد: `HTTP 200`، ابعاد ۱۰۸۰×۱۳۵۰
+- ⬜ Secretها را اضافه کن (تنها قدمِ باقی‌مانده)
+
+برو سراغ **قدم ۲**. حدود **۵ دقیقه**.
 
 > ⚠️ **ریپو باید Public باشد** — چون Zernio باید بتواند تصویر پست را از
 > `raw.githubusercontent.com` دانلود کند.
@@ -11,7 +18,7 @@
 
 **راه سریع** (اگر GitHub CLI نصب است):
 ```bash
-bash push_to_github.sh YOUR_USERNAME kolbe-ghalb
+bash push_to_github.sh lovelife4all kolbe-ghalb
 ```
 
 **راه دستی:**
@@ -20,7 +27,7 @@ bash push_to_github.sh YOUR_USERNAME kolbe-ghalb
 3. Create repository
 4. در پوشه‌ی پروژه:
 ```bash
-git remote add origin https://github.com/YOUR_USERNAME/kolbe-ghalb.git
+git remote add origin https://github.com/lovelife4all/kolbe-ghalb.git
 git push -u origin main
 ```
 
