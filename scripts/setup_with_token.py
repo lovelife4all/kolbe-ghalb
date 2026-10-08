@@ -14,10 +14,10 @@ setup_with_token.py — ساخت ریپو روی گیت‌هاب و push کرد�
 from __future__ import annotations
 
 import argparse
-import base64
 import os
 import subprocess
 import sys
+from datetime import datetime
 
 import requests
 
@@ -109,6 +109,8 @@ def main() -> None:
     ap.add_argument("--desc", default="پیج عاشقانه — انتشار خودکار روی اینستاگرام و تلگرام")
     ap.add_argument("--with-secrets", action="store_true",
                     help="ثبت Secretها از متغیرهای محیطی هم‌نام")
+    ap.add_argument("--skip-post", metavar="POST_ID",
+                    help="علامت زدنِ یک پست به عنوان منتشرشده (برای جلوگیری از انتشار دوباره)")
     args = ap.parse_args()
 
     token = os.getenv("GITHUB_PAT", "").strip()
@@ -116,6 +118,26 @@ def main() -> None:
         sys.exit("❌ توکن را در متغیر محیطی GITHUB_PAT قرار بده.")
 
     owner, name = ensure_repo(token, args.name, args.desc)
+
+    if args.skip_post:
+        import csv
+        path = os.path.join(ROOT, "content", "posts.csv")
+        with open(path, newline="", encoding="utf-8") as fh:
+            rows = list(csv.DictReader(fh))
+        hit = [r for r in rows if r["id"].strip() == args.skip_post]
+        if hit:
+            hit[0]["status"] = "published"
+            hit[0]["tg_status"] = "sent"
+            hit[0]["published_at"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+            with open(path, "w", newline="", encoding="utf-8") as fh:
+                w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
+                w.writeheader(); w.writerows(rows)
+            run(["git", "add", "content/posts.csv"])
+            run(["git", "commit", "-m", f"علامت‌زدن {args.skip_post} به عنوان منتشرشده"], check=False)
+            print(f"✅ {args.skip_post} به عنوان «منتشرشده» علامت خورد.")
+        else:
+            print(f"⚠️  پست {args.skip_post} پیدا نشد.")
+
     push(token, owner, name)
 
     if args.with_secrets:
