@@ -1,0 +1,71 @@
+name: انتشار خودکار پست
+
+on:
+  schedule:
+    # سه نوبت در روز به وقت تهران (ساعت رسمی ایران = UTC+3:30)
+    # 09:00 → 05:30 UTC | 15:00 → 11:30 UTC | 21:00 → 17:30 UTC
+    - cron: '30 5,11,17 * * *'
+  workflow_dispatch:
+    inputs:
+      post_id:
+        description: 'شناسه‌ی پست خاص (اختیاری، مثل p003)'
+        required: false
+      dry_run:
+        description: 'شبیه‌سازی بدون ارسال واقعی'
+        type: boolean
+        default: false
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID:    ${{ secrets.TELEGRAM_CHAT_ID }}
+      ZERNIO_API_KEY:              ${{ secrets.ZERNIO_API_KEY }}
+      ZERNIO_INSTAGRAM_ACCOUNT_ID: ${{ secrets.ZERNIO_INSTAGRAM_ACCOUNT_ID }}
+      IMAGE_CDN:                   ${{ vars.IMAGE_CDN || 'raw' }}
+      PAGE_SIGNATURE:      ${{ vars.PAGE_SIGNATURE }}
+      PAGE_HASHTAGS:       ${{ vars.PAGE_HASHTAGS }}
+      DRY_RUN:             ${{ github.event.inputs.dry_run == 'true' && '1' || '0' }}
+
+    steps:
+      - name: دریافت کد
+        uses: actions/checkout@v4
+
+      - name: نصب پایتون
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: نصب وابستگی‌ها
+        run: pip install -r requirements.txt
+
+      - name: مرحله ۱ — انتخاب پست بعدی و ساخت تصویر
+        run: python scripts/publish.py --prepare ${{ github.event.inputs.post_id && format('--id {0}', github.event.inputs.post_id) || '' }}
+
+      - name: مهلت برای در دسترس قرار گرفتن تصویر
+        run: sleep 25
+
+      - name: مرحله ۲ — انتشار در تلگرام و اینستاگرام (از طریق Zernio)
+        run: python scripts/publish.py --publish ${{ github.event.inputs.post_id && format('--id {0}', github.event.inputs.post_id) || '' }}
+
+      - name: خلاصه
+        run: |
+          echo "::notice::وضعیت انتشار در بالا گزارش شده است."
+          python - <<'PY'
+          import csv
+          rows = list(csv.DictReader(open('content/posts.csv', encoding='utf-8')))
+          done = sum(1 for r in rows if r['status'] == 'published')
+          print(f"منتشرشده: {done} از {len(rows)}")
+          left = len(rows) - done
+          if left == 0:
+              print("⚠️ بانک محتوا خالی شد — پست‌های جدید اضافه کن.")
+          PY
