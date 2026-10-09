@@ -262,7 +262,15 @@ def phase_publish(force_id: str | None) -> int:
     img_rel = (row.get("image") or "").strip()
     img_abs = os.path.join(ROOT, img_rel) if img_rel else None
 
-    ok_tg = telegram_send(img_abs, build_caption(row, "telegram"))
+    # اگر این پست قبلاً در تلگرام منتشر شده، دوباره فرستاده نمی‌شود
+    # (مثلاً وقتی همه‌ی محتوا یک‌جا در تلگرام منتشر شده باشد)
+    already_tg = (row.get("tg_status") or "").strip() == "sent"
+    if already_tg:
+        print("⏭️  تلگرام: قبلاً منتشر شده؛ رد شد.")
+        ok_tg = True
+    else:
+        ok_tg = telegram_send(img_abs, build_caption(row, "telegram"))
+
     ok_ig = zernio_publish(img_abs, build_caption(row, "instagram"))
 
     changes = {
