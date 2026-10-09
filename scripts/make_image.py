@@ -50,6 +50,7 @@ FALLBACK = {
     "empty":  ("#1a1410", "#4a3a2a"),   "farewell": ("#1b0f14", "#5a2436"),
     "coffee":  ("#1a1109", "#5a3a1e"),   "letters": ("#231a12", "#6b5238"),
     "breeze":  ("#122033", "#4d7a9c"),   "shadow":  ("#0c0e14", "#2c3340"),
+    "moon":    ("#080d1c", "#2b3a66"),   "hands":   ("#1e1410", "#6b4a30"),
 }
 DEFAULT_THEME = "rose"
 HAS_RAQM = features.check("raqm")
