@@ -48,6 +48,8 @@ FALLBACK = {
     "wine":   ("#180509", "#6d1420"),   "ocean":  ("#071a2b", "#175a7a"),
     "alone":  ("#0d1220", "#2f3b5c"),   "rain":   ("#0b1418", "#244a55"),
     "empty":  ("#1a1410", "#4a3a2a"),   "farewell": ("#1b0f14", "#5a2436"),
+    "coffee":  ("#1a1109", "#5a3a1e"),   "letters": ("#231a12", "#6b5238"),
+    "breeze":  ("#122033", "#4d7a9c"),   "shadow":  ("#0c0e14", "#2c3340"),
 }
 DEFAULT_THEME = "rose"
 HAS_RAQM = features.check("raqm")
