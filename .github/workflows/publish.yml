@@ -32,6 +32,7 @@ jobs:
       ZERNIO_INSTAGRAM_ACCOUNT_ID: ${{ secrets.ZERNIO_INSTAGRAM_ACCOUNT_ID }}
       IMAGE_CDN:                   ${{ vars.IMAGE_CDN || 'raw' }}
       PAGE_SIGNATURE:      ${{ vars.PAGE_SIGNATURE }}
+      TELEGRAM_SIGNATURE:  ${{ vars.TELEGRAM_SIGNATURE }}
       PAGE_HASHTAGS:       ${{ vars.PAGE_HASHTAGS }}
       DRY_RUN:             ${{ github.event.inputs.dry_run == 'true' && '1' || '0' }}
 
