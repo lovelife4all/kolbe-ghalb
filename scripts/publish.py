@@ -43,6 +43,7 @@ CFG = {
     # تلگرام
     "tg_token": env("TELEGRAM_BOT_TOKEN"),
     "tg_chat": env("TELEGRAM_CHAT_ID"),
+    "tg_signature": env("TELEGRAM_SIGNATURE"),
     # اینستاگرام از طریق Zernio
     "zernio_key": env("ZERNIO_API_KEY"),
     "zernio_account": env("ZERNIO_INSTAGRAM_ACCOUNT_ID"),
@@ -109,8 +110,9 @@ def build_caption(row: dict, platform: str) -> str:
     )
     if tags:
         parts.append(tags)
-    if CFG["signature"]:
-        parts.append(CFG["signature"])
+    signature = (CFG["tg_signature"] if platform == "telegram" else "") or CFG["signature"]
+    if signature:
+        parts.append(signature)
 
     caption = "\n\n".join(p for p in parts if p)
     return caption[:2200] if platform == "instagram" else caption[:4000]
